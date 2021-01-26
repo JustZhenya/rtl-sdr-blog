@@ -21,9 +21,9 @@
 
 #include <errno.h>
 #include <signal.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -39,7 +39,7 @@
 #define _USE_MATH_DEFINES
 #endif
 
-#include <math.h>
+#include <cmath>
 #include <pthread.h>
 #include <libusb.h>
 
@@ -514,8 +514,7 @@ namespace FilterBuilder
 	vector<float> MakeWindow(WindowType windowType, int length)
 	{
 		vector<float> w(length);
-		length--;
-		for (int i = 0; i <= length; i++)
+		for (int i = 0; i < length; i++)
 		{
 			float n;
 			float a0;
@@ -1702,7 +1701,7 @@ static void rtlsdr_callback(unsigned char* buf, uint32_t len, void *ctx)
 	pthread_rwlock_wrlock(&d->rw);
 	d->iq.clear();
 	d->iq.reserve(len / 2);
-	for(uint32_t i = 0; i < len / 2; i++)
+	for(uint32_t i = 0; i < len; i += 2)
 		d->iq.emplace_back(_lutPtr[*(buf + i)], _lutPtr[*(buf + i + 1)]);
 	pthread_rwlock_unlock(&d->rw);
 
@@ -1713,7 +1712,6 @@ static void* dongle_thread_fn(void *arg)
 {
 	struct dongle_state *s = (struct dongle_state *) arg;
 	int capture_rate = rtlsdr_get_sample_rate(s->dev);
-	fprintf(stderr, "Device capture rate: %d\n", capture_rate);
 	rtlsdr_read_async(s->dev, rtlsdr_callback, s, 0, 2 * (capture_rate / 10));
 	return 0;
 }
@@ -1818,8 +1816,8 @@ void frequency_range(struct controller_state *s, char *arg)
 	{
 		s->freqs[s->freq_len] = (uint32_t)i;
 		s->freq_len++;
-		if (s->freq_len >= FREQUENCIES_LIMIT) {
-			break;}
+		if (s->freq_len >= FREQUENCIES_LIMIT)
+			break;
 	}
 	stop[-1] = ':';
 	step[-1] = ':';
