@@ -1702,7 +1702,7 @@ static void rtlsdr_callback(unsigned char* buf, uint32_t len, void *ctx)
 	d->iq.clear();
 	d->iq.reserve(len / 2);
 	for(uint32_t i = 0; i < len; i += 2)
-		d->iq.emplace_back(_lutPtr[*(buf + i)], _lutPtr[*(buf + i + 1)]);
+		d->iq.emplace_back(_lutPtr[*(buf + i + 1)], _lutPtr[*(buf + i)]);
 	pthread_rwlock_unlock(&d->rw);
 
 	safe_cond_signal(&d->ready, &d->ready_m);
@@ -1911,7 +1911,7 @@ int main(int argc, char** argv)
 
 	int dev_given = 0;
 	int custom_ppm = 0;
-    int enable_biastee = 0;
+	int enable_biastee = 0;
 	dongle_init(&dongle);
 	demod_init(&demod);
 	output_init(&output);
@@ -2060,7 +2060,8 @@ int main(int argc, char** argv)
 	if (enable_biastee)
 		fprintf(stderr, "activated bias-T on GPIO PIN 0\n");
 
-	verbose_ppm_set(dongle.dev, dongle.ppm_error);
+	if(custom_ppm)
+		verbose_ppm_set(dongle.dev, dongle.ppm_error);
 
 	const char* filename = "-";
 	if(argc > optind)
