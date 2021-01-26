@@ -1769,7 +1769,7 @@ static void* output_thread_fn(void *arg)
 
 static void optimal_settings(int freq)
 {
-	dongle.rate = 1024000; // TODO allow set samplerate
+	dongle.rate = 250000; // TODO allow set samplerate
 	dongle.freq = freq + dongle.rate / 4;
 }
 
@@ -1991,12 +1991,13 @@ int main(int argc, char** argv)
 
 	/* MY GOVNOCODE */
 
-	int capture_rate = 1024000;
+	int capture_rate = 250000;
 	int freq_offset = capture_rate / 4;
 
 	demod.decim_stage_count = GetDecimationStageCount(capture_rate);
 
 	int audio_sample_rate = capture_rate / pow(2.0, demod.decim_stage_count);
+	fprintf(stderr, "Audio sample rate: %d Hz\n", audio_sample_rate);
 
 	if(demod.squelch_level)
 	{
